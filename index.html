@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Boarding Pass Lawatan Maya Sarawak</title>
+
+  <!-- Styling -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1200&q=60');
+      background-size: cover;
+      background-position: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .overlay {
+      background: rgba(0,0,0,0.6);
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 40px;
+      color: white;
+      text-align: center;
+    }
+
+    .panel {
+      background: white;
+      color: black;
+      width: 350px;
+      margin: auto;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      background: #d62828;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      margin-top: 10px;
+    }
+
+    button:hover { background: #b71c1c; }
+
+    .bp-card {
+      background: #fff;
+      width: 360px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .bp-title {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #d62828;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+  </style>
+
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<div class="overlay" id="login-screen">
+  <div class="panel">
+    <h2>Lawatan Maya Sarawak</h2>
+    <p>Sila masukkan kata laluan:</p>
+    <input type="password" id="pass" placeholder="Password" style="padding:10px;width:90%;border-radius:6px;border:1px solid #ccc;">
+    <button onclick="checkPassword()">Masuk</button>
+  </div>
+</div>
+
+<div class="overlay" id="name-screen" style="display:none;">
+  <div class="panel">
+    <h2>Pilih Nama Anda</h2>
+
+    <select id="nameSelect" style="padding:10px;width:95%;border-radius:6px;border:1px solid #ccc;">
+      <option value="">-- Pilih Nama --</option>
+      <option>Amira Rosli</option>
+      <option>Amin Ahmad</option>
+      <option>Atirah Mutalib</option>
+      <option>Zainab Mawadah</option>
+      <option>Amin Albab</option>
+    </select>
+
+    <button onclick="generateBoarding()">Jana Boarding Pass</button>
+  </div>
+</div>
+
+<div class="overlay" id="bp-screen" style="display:none;">
+  <div class="bp-card" id="bp-card">
+    <div class="bp-title">Boarding Pass<br>Lawatan Maya Sarawak</div>
+
+    <p><span class="label">Nama:</span> <span id="bp-name"></span></p>
+    <p><span class="label">Nombor Tiket:</span> <span id="bp-ticket"></span></p>
+    <p><span class="label">Kerusi:</span> <span id="bp-seat"></span></p>
+    <p><span class="label">Gate:</span> <span id="bp-gate"></span></p>
+    <p><span class="label">Tarikh:</span> 20 Disember 2025</p>
+    <p><span class="label">Dari → Ke:</span> Kuala Lumpur → Kuching</p>
+
+    <button onclick="downloadPDF()">Muat Turun PDF</button>
+  </div>
+</div>
+
+
+<script>
+function checkPassword() {
+  let pw = document.getElementById("pass").value;
+  if (pw === "sabah2025") {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("name-screen").style.display = "block";
+  } else {
+    alert("Password salah!");
+  }
+}
+
+function generateBoarding() {
+  let name = document.getElementById("nameSelect").value;
+
+  if (name === "") {
+    alert("Sila pilih nama!");
+    return;
+  }
+
+  document.getElementById("bp-name").textContent = name;
+
+  document.getElementById("bp-ticket").textContent =
+    "KSB-" + Math.floor(1000 + Math.random() * 9000);
+
+  const seats = ["A1","A2","A3","B1","B2","B3","C1","C2","C3"];
+  document.getElementById("bp-seat").textContent =
+    seats[Math.floor(Math.random() * seats.length)];
+
+  const gates = ["G1", "G2", "G5", "G7", "H1"];
+  document.getElementById("bp-gate").textContent =
+    gates[Math.floor(Math.random() * gates.length)];
+
+  document.getElementById("name-screen").style.display = "none";
+  document.getElementById("bp-screen").style.display = "block";
+}
+
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text("Boarding Pass - Lawatan Maya Sarawak", 20, 20);
+
+  doc.setFontSize(12);
+  doc.text("Nama: " + document.getElementById("bp-name").textContent, 20, 40);
+  doc.text("Tiket: " + document.getElementById("bp-ticket").textContent, 20, 55);
+  doc.text("Kerusi: " + document.getElementById("bp-seat").textContent, 20, 70);
+  doc.text("Gate: " + document.getElementById("bp-gate").textContent, 20, 85);
+  doc.text("Tarikh: 20 Disember 2025", 20, 100);
+  doc.text("Dari → Ke: Kuala Lumpur → Kuching", 20, 115);
+
+  doc.save("BoardingPass.pdf");
+}
+</script>
+
+</body>
+</html>
